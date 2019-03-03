@@ -21,7 +21,7 @@ docker-compose build
 ```
 **Run the migrations:**
 ```bash
-docker-compose run web ./fried_chicken/manage.py migrate
+docker-compose run web ./manage.py migrate
 ```
 **Run the development server:**
 ```bash

@@ -2,13 +2,15 @@ FROM python:3
 
 ENV PYTHONUNBUFFERED 1
 
-RUN mkdir /code
-WORKDIR /code
+RUN mkdir /project
 
-COPY requirements.txt /code/
-RUN pip install -r requirements.txt
+COPY requirements.txt /project/
+RUN pip install -r /project/requirements.txt
 
-ENV PYTHONPATH /code/fried_chicken
+ENV PYTHONPATH /project/code/
 ENV DJANGO_SETTINGS_MODULE fried_chicken.settings.base
 
-COPY . /code/
+RUN mkdir /project/code
+WORKDIR /project/code
+
+COPY fried_chicken/ /project/code/
