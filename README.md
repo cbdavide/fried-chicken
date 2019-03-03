@@ -12,3 +12,18 @@ Order fried chicken online and pay it using Tpaga wallet.
 - Creating a simple Ansible playbook to deploy the Django project: 2 hours
 
 For a total estimated time of 15 hours.
+
+
+### Run the project
+**Create the container:**
+```bash
+docker-compose build
+```
+**Run the migrations:**
+```bash
+docker-compose run web ./fried_chicken/manage.py migrate
+```
+**Run the development server:**
+```bash
+docker-compose up -d
+```
