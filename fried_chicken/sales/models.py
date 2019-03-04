@@ -31,7 +31,9 @@ class Sale(models.Model):
         max_length=100,
     )
 
-    total = models.PositiveIntegerField()
+    total = models.PositiveIntegerField(
+        default=0
+    )
 
     payment_type = models.PositiveSmallIntegerField(
         choices=PAYMENT_CHOICES,
@@ -65,7 +67,18 @@ class SaleItem(models.Model):
 
     quantity = models.PositiveSmallIntegerField()
 
-    subtotal = models.PositiveIntegerField()
+    subtotal = models.PositiveIntegerField(
+        default=0
+    )
+
+    def save(self, *args, **kwargs):
+        subtotal = self.quantity * self.product.price_per_unity
+        self.subtotal = subtotal
+
+        self.sale.total += subtotal
+        self.sale.save()
+
+        super().save(*args, **kwargs)
 
     class Meta:
         unique_together = ('sale', 'product', 'inventory')
