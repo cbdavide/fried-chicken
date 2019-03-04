@@ -32,9 +32,9 @@ class Inventory(models.Model):
         on_delete=models.CASCADE
     )
 
-    input_amount = models.PositiveSmallIntegerField()
+    input_quantity = models.PositiveSmallIntegerField()
 
-    current_amount = models.PositiveSmallIntegerField()
+    current_quantity = models.PositiveSmallIntegerField()
 
     out_of_stock_date = models.DateField(
         null=True,
@@ -43,10 +43,10 @@ class Inventory(models.Model):
 
     def save(self, *args, **kwargs):
 
-        if self.current_amount == 0 and self.out_of_stock_date is None:
+        if self.current_quantity == 0 and self.out_of_stock_date is None:
             # The inventory record ran out product
             self.out_of_stock_date = timezone.now().date()
-        elif self.current_amount > 0 and self.out_of_stock_date is not None:
+        elif self.current_quantity > 0 and self.out_of_stock_date is not None:
             # In case some amount of products go back to the inventory
             self.out_of_stock_date = None
 
