@@ -31,14 +31,14 @@ class Sale(models.Model):
         max_length=100,
     )
 
-    total = models.PositiveIntegerField(
-        default=0
-    )
-
     payment_type = models.PositiveSmallIntegerField(
         choices=PAYMENT_CHOICES,
         default=TPAGA_WALLET
     )
+
+    @property
+    def total(self):
+        return sum([item.subtotal for item in self.saleitem_set.all()])
 
     def __str__(self):
         return str(self.order)
@@ -67,24 +67,9 @@ class SaleItem(models.Model):
 
     quantity = models.PositiveSmallIntegerField()
 
-    subtotal = models.PositiveIntegerField(
-        default=0
-    )
-
-    def save(self, *args, **kwargs):
-        subtotal = self.quantity * self.product.price_per_unity
-        self.subtotal = subtotal
-
-        self.sale.total += subtotal
-        self.sale.save()
-
-        super().save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        self.sale.total -= self.subtotal
-        self.sale.save()
-
-        super().delete(*args, **kwargs)
+    @property
+    def subtotal(self):
+        return self.product.price_per_unity * self.quantity
 
     class Meta:
         unique_together = ('sale', 'product', 'inventory')
