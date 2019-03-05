@@ -80,6 +80,12 @@ class SaleItem(models.Model):
 
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        self.sale.total -= self.subtotal
+        self.sale.save()
+
+        super().delete(*args, **kwargs)
+
     class Meta:
         unique_together = ('sale', 'product', 'inventory')
 
