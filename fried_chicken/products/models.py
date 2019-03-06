@@ -20,7 +20,7 @@ class Product(models.Model):
     price_per_unit = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"{self.name} - ${self.price_per_unity}"
+        return f"{self.name} - ${self.price_per_unit}"
 
 
 class Inventory(models.Model):

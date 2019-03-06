@@ -71,7 +71,7 @@ class SaleItem(models.Model):
 
     @property
     def subtotal(self):
-        return self.product.price_per_unity * self.quantity
+        return self.product.price_per_unit * self.quantity
 
     class Meta:
         unique_together = ('sale', 'product', 'inventory')
