@@ -3,7 +3,10 @@ from .models import Inventory
 
 
 def get_items_from_inventory(product, quantity):
-
+    """
+    Returns the needed list of inventories with the amount of units of the
+    product that are going to be taken from each inventory to make a sell.
+    """
     inventories = Inventory.objects.filter(
         product=product,
         out_of_stock_date__isnull=True
@@ -23,16 +26,13 @@ def get_items_from_inventory(product, quantity):
 
         if inventory.current_quantity < (quantity - accumulated):
             added = inventory.current_quantity
-            response_list.append(dict(
-                inventory_id=inventory.id,
-                quantity=added
-            ))
         else:
             added = quantity - accumulated
-            response_list.append(dict(
-                inventory_id=inventory.id,
-                quantity=added
-            ))
+
+        response_list.append(dict(
+            inventory=inventory,
+            quantity=added
+        ))
 
         accumulated += added
 

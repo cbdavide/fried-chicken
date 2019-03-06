@@ -14,14 +14,14 @@ class GetItemsFromInventoryTest(TestCase):
 
         product = Product.objects.create(
             name='test product',
-            unity='test unit',
-            price_per_unity=1
+            unit='test unit',
+            price_per_unit=1
         )
 
-        other_product = Product.objects.create(
+        Product.objects.create(
             name='test other product',
-            unity='test unit',
-            price_per_unity=1
+            unit='test unit',
+            price_per_unit=1
         )
 
         Inventory.objects.create(
@@ -57,7 +57,7 @@ class GetItemsFromInventoryTest(TestCase):
         self.assertEqual(accumulated, quantity)
 
     def test_one_inventory_needed(self):
-        """It is necessary to use the unities only of one inventory."""
+        """It is necessary to use the units only of one inventory."""
         quantity = 5
         product = Product.objects.get(name='test product')
 
@@ -66,7 +66,7 @@ class GetItemsFromInventoryTest(TestCase):
         ).order_by('input_date')
 
         expected_response = [
-            dict(inventory_id=inventories[1].id, quantity=5)
+            dict(inventory=inventories[1], quantity=5)
         ]
 
         actual_response = get_items_from_inventory(product, quantity)
@@ -74,7 +74,7 @@ class GetItemsFromInventoryTest(TestCase):
         self._test_list(actual_response, expected_response, quantity)
 
     def test_two_inventories_needed(self):
-        """It is necessary to use the unities of two inventories."""
+        """It is necessary to use the units of two inventories."""
         quantity = 25
         product = Product.objects.get(name='test product')
 
@@ -83,8 +83,8 @@ class GetItemsFromInventoryTest(TestCase):
         ).order_by('input_date')
 
         expected_response = [
-            dict(inventory_id=inventories[1].id, quantity=5),
-            dict(inventory_id=inventories[2].id, quantity=20),
+            dict(inventory=inventories[1], quantity=5),
+            dict(inventory=inventories[2], quantity=20),
         ]
 
         actual_response = get_items_from_inventory(product, quantity)
