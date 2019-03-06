@@ -47,6 +47,8 @@ class Sale(models.Model):
         if self.payment_type == self.TPAGA_WALLET:
             return TpagaPayment
 
+        raise Exception("Not implemented payment method")
+
 
 class SaleItem(models.Model):
 

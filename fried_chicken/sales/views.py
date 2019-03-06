@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from django.views.generic.edit import FormView
 
-# Create your views here.
+from .forms import SaleForm
+
+
+class SaleFormView(FormView):
+    template_name = 'sales/sale.html'
+    form_class = SaleForm
+    success_url = '/sales/product'
