@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views import SaleFormView
+from .views import SaleProductFormView
 
 app_name = 'sales'
 urlpatterns = [
-    path('product/<int:product>', SaleFormView.as_view(), name='create'),
+    path('product/<int:product>', SaleProductFormView.as_view(), name='create'),
 ]

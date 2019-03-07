@@ -43,12 +43,6 @@ class Sale(models.Model):
     def __str__(self):
         return str(self.order)
 
-    def resolve_payment_model(self):
-        if self.payment_type == self.TPAGA_WALLET:
-            return TpagaPayment
-
-        raise Exception("Not implemented payment method")
-
 
 class SaleItem(models.Model):
 
