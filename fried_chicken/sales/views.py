@@ -15,8 +15,6 @@ class PaymentMixin(object):
 
     def make_payment(self):
         information = self.process_payment()
-        # TODO: Handle passing the deep link to the user
-        # QUESTION: Should I use the context data ?
         return HttpResponseRedirect(self.get_success_url())
 
     def process_payment(self):
@@ -24,13 +22,7 @@ class PaymentMixin(object):
 
 
 class TpagaPaymentMixin(PaymentMixin):
-
-    def process_payment(self):
-        # Call the API
-        # Create the register in the TpagaPayment models
-        # Return the deep link to the user
-        pass
-
+    pass
 
 class SaleProductMixin(object):
 
@@ -87,20 +79,6 @@ class SaleProductFormView(TpagaPaymentMixin, SaleProductMixin, SaleMixin, FormVi
     def get(self, request, *args, **kwargs):
         get_object_or_404(Product, pk=self.kwargs['product'])
         return super(SaleProductFormView, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            payment_type = int(form.cleaned_data['payment_method'])
-
-            if payment_type != Sale.TPAGA_WALLET:
-                error_message = "Sorry, The payment method is not supported."
-                form.add_error(None, error_message)
-                return self.form_invalid(form)
-
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
 
     def form_valid(self, form):
 
