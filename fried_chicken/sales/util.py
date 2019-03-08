@@ -4,7 +4,6 @@ from base64 import b64encode
 
 from django.conf import settings
 
-PAYMENT_REQUEST_ENDPOINT = 'payment_requests/create'
 
 def authenticated(func):
 
@@ -63,7 +62,7 @@ def create_payment_request(sale, payment):
 
     # purchase_details_url=sale.get_absolute_url(),
     response = post_request(
-        PAYMENT_REQUEST_ENDPOINT,
+        settings.PAYMENT_REQUEST_ENDPOINT,
         payload
     )
 

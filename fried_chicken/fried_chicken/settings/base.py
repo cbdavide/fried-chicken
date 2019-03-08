@@ -136,6 +136,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 TPAGA_API_BASE_URL = 'https://stag.wallet.tpaga.co/merchants/api/v1'
+PAYMENT_REQUEST_ENDPOINT = 'payment_requests/create'
 
 TPAGA_API_USER = get_secret('TPAGA_USER')
 TPAGA_API_PASSWORD = get_secret('TPAGA_PASSWORD')
