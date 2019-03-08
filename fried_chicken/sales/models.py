@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.urls import reverse
 
 from products.models import Product
 from products.models import Inventory
@@ -42,6 +43,9 @@ class Sale(models.Model):
 
     def __str__(self):
         return str(self.order)
+
+    def get_absolute_url(self):
+        return reverse('sales:detail', args=[self.id])
 
 
 class SaleItem(models.Model):
@@ -105,7 +109,7 @@ class TpagaPayment(models.Model):
 
     user_ip_address = models.GenericIPAddressField()
 
-    expires_at = models.DateField()
+    expires_at = models.DateTimeField()
 
     status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES,

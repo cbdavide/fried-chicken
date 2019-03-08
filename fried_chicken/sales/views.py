@@ -1,14 +1,30 @@
+from datetime import datetime
+from datetime import timedelta
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.views.generic.edit import FormView
+from django.views.generic import DetailView
 
 from products.models import Product
 from products.util import get_items_from_inventory
 
 from .forms import SaleForm
+from .util import create_payment_request
 from .models import Sale
 from .models import SaleItem
 from .models import TpagaPayment
+
+
+REVERSE_TPAGA_STATUS = dict(
+    created=TpagaPayment.CREATED,
+    paid=TpagaPayment.PAID,
+    failed=TpagaPayment.FAILED,
+    expired=TpagaPayment.EXPIRED,
+    delivered=TpagaPayment.DELIVERED,
+    reverted=TpagaPayment.REVERTED
+)
 
 
 class PaymentMixin(object):
@@ -22,7 +38,31 @@ class PaymentMixin(object):
 
 
 class TpagaPaymentMixin(PaymentMixin):
-    pass
+
+    def make_payment(self):
+        tpaga_payment_url = self.process_payment()
+        return HttpResponseRedirect(tpaga_payment_url)
+
+    def process_payment(self):
+
+        payment = TpagaPayment(
+            sale=self.sale,
+            user_ip_address=self.request.META['REMOTE_ADDR'],
+            expires_at=timezone.now() + timedelta(days=1)
+        )
+
+        payment_information = create_payment_request(
+            self.sale,
+            payment
+        )
+
+        payment.tpaga_token = payment_information['token']
+        payment.status = REVERSE_TPAGA_STATUS[payment_information['status']]
+        payment.idempotency_token = payment_information['idempotency_token']
+        payment.save()
+
+        return payment_information['tpaga_payment_url']
+
 
 class SaleProductMixin(object):
 
@@ -88,3 +128,7 @@ class SaleProductFormView(TpagaPaymentMixin, SaleProductMixin, SaleMixin, FormVi
         self.payment_type = int(form.cleaned_data['payment_method'])
 
         return self.create_sale()
+
+
+class SaleDetailView(DetailView):
+    pass

@@ -37,7 +37,7 @@ SECRET_KEY = '#*nu0m=wv0e!j!03br0$bhvq%*_ih!^xw8oy6bcy7m$vu=kl1$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -134,3 +134,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+TPAGA_API_BASE_URL = 'https://stag.wallet.tpaga.co/merchants/api/v1'
+
+TPAGA_API_USER = get_secret('TPAGA_USER')
+TPAGA_API_PASSWORD = get_secret('TPAGA_PASSWORD')
