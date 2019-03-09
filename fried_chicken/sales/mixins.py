@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.utils import timezone
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 from products.util import get_items_from_inventory
@@ -9,6 +10,7 @@ from .models import Sale
 from .models import SaleItem
 from .models import TpagaPayment
 from .util import create_payment_request
+from .util import confirm_payment_request
 
 REVERSE_TPAGA_STATUS = dict(
     created=TpagaPayment.CREATED,
@@ -125,3 +127,36 @@ class SaleMixin(object):
         payment_handler = payment_handler_cls(self.sale, self.request)
 
         return payment_handler.make_payment()
+
+
+class PaymentConfirmationMixin(object):
+
+    def succes(self):
+        return HttpResponseRedirect(reverse('sales:succes'))
+
+    def failure(self):
+        sale = self.object.sale
+
+        # Returning the product units to its inventory
+        for sale_item in sale.saleitem_set.all():
+            sale_item.inventory.current_quantity += sale_item.quantity
+            sale_item.inventory.save()
+            sale_item.delete()
+
+        return HttpResponseRedirect(reverse('sales:failure'))
+
+    def confirm_payment(self):
+        confirmation = confirm_payment_request(self.object)
+
+        status = REVERSE_TPAGA_STATUS[confirmation['status']]
+
+        self.object.status = status
+        self.object.save()
+
+        if status == TpagaPayment.PAID:
+            return self.succes()
+        elif status == TpagaPayment.FAILED:
+            return self.failure()
+
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
