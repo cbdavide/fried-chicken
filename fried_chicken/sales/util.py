@@ -3,48 +3,26 @@ import requests
 from base64 import b64encode
 
 from django.conf import settings
+from django.urls import reverse
+
+from .decorators import tpaga_request
 
 
-def authenticated(func):
-
-    def wrapper(*args, **kwargs):
-
-        headers = kwargs.get('headers', {})
-
-        user = settings.TPAGA_API_USER
-        password = settings.TPAGA_API_PASSWORD
-
-        bytes_credentials = f'{user}:{password}'.encode('utf-8')
-        credentials = b64encode(bytes_credentials)
-        credentials = credentials.decode("utf-8")
-
-        headers.update({
-            'Authorization': f'Basic {credentials}',
-            'Cache-Control': 'no-cache',
-            'Content-Type': 'application/json'
-        })
-
-        kwargs.update(headers=headers)
-        print(kwargs)
-
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
-@authenticated
+@tpaga_request
 def post_request(api_endpoint, payload, *args, **kwargs):
+    return requests.post(
+        api_endpoint,
+        data=json.dumps(payload),
+        headers=kwargs['headers']
+    )
 
-    url = f'{settings.TPAGA_API_BASE_URL}/{api_endpoint}'
 
-    try:
-        return requests.post(
-            url,
-            data=json.dumps(payload),
-            headers=kwargs['headers']
-        )
-    except requests.Timeout:
-        raise Exception("Couldn't create the request")
+@tpaga_request
+def get_request(api_endpoint, *args, **kwargs):
+    return requests.get(
+        api_endpoint,
+        headers=kwargs['headers']
+    )
 
 
 def create_payment_request(sale, payment):
@@ -60,9 +38,13 @@ def create_payment_request(sale, payment):
         purchase_description="Payment of fried chicken.",
     )
 
-    # purchase_details_url=sale.get_absolute_url(),
+    # purchase_details_url=reverse(
+    #     'sales:tpaga_confirmation',
+    #     args[str(sale.order)]
+    # )
+
     response = post_request(
-        settings.PAYMENT_REQUEST_ENDPOINT,
+        f"{settings.PAYMENT_REQUEST_ENDPOINT}/create",
         payload
     )
 
@@ -70,3 +52,32 @@ def create_payment_request(sale, payment):
         return response.json()
 
     raise Exception("The request wasn't created.")
+
+
+def confirm_payment_request(payment):
+
+    response = get_request(
+        f"{settings.PAYMENT_REQUEST_ENDPOINT}/{payment.tpaga_token}/info"
+    )
+
+    if response.status_code == 200:
+        return response.json()
+
+    raise Exception("Someting went wrong")
+
+
+def confirm_delivery(payment):
+
+    payload = dict(
+        payment_request_token=payment.tpaga_token
+    )
+
+    response = post_request(
+        f"{settings.PAYMENT_REQUEST_ENDPOINT}/confirm_delivery",
+        payload
+    )
+
+    if response.status_code == 200:
+        return response.json()
+
+    raise Exception("Someting went wrong")
