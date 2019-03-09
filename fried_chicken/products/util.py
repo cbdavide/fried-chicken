@@ -40,3 +40,13 @@ def get_items_from_inventory(product, quantity):
         raise Exception('insufficient units')
 
     return response_list
+
+
+def return_items_to_inventory(sale_items):
+
+    for sale_item in sale_items:
+
+        sale_item.inventory.current_quantity += sale_item.quantity
+        sale_item.inventory.save()
+
+        sale_item.delete()
