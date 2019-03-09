@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.contrib import messages
 from django.utils import timezone
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -9,6 +10,7 @@ from products.util import get_items_from_inventory
 from .models import Sale
 from .models import SaleItem
 from .models import TpagaPayment
+from .util import confirm_delivery
 from .util import create_payment_request
 from .util import confirm_payment_request
 
@@ -74,6 +76,13 @@ class SaleProductMixin(object):
     product = None
     quantity = None
 
+    def product_limit_exceeded(self):
+        product_name = self.product.name
+        error_msg = f"Sorry, we don't have enough {product_name}s."
+        messages.error(self.request, error_msg)
+
+        return HttpResponseRedirect(reverse('sales:create'))
+
     def resolve_inventories(self):
         return get_items_from_inventory(self.product, self.quantity)
 
@@ -121,10 +130,18 @@ class SaleMixin(object):
         )
 
         self.sale.save()
-        self.sale_items = self.create_items()
 
-        payment_handler_cls = self.resolve_payment_handler()
-        payment_handler = payment_handler_cls(self.sale, self.request)
+        try:
+            self.sale_items = self.create_items()
+
+            payment_handler_cls = self.resolve_payment_handler()
+            payment_handler = payment_handler_cls(self.sale, self.request)
+
+        except Exception:
+            # TODO: Add custom exceptions
+
+            self.sale.delete()
+            return self.product_limit_exceeded()
 
         return payment_handler.make_payment()
 
@@ -132,18 +149,34 @@ class SaleMixin(object):
 class PaymentConfirmationMixin(object):
 
     def succes(self):
-        return HttpResponseRedirect(reverse('sales:succes'))
+        confirmation = confirm_delivery(self.object)
+        status = REVERSE_TPAGA_STATUS[confirmation['status']]
+
+        self.object.status = status
+        self.object.save()
+
+        messages.success(
+            self.request,
+            "The payment was successful, We'll send you your order soon."
+        )
+
+        return self.return_response()
 
     def failure(self):
         sale = self.object.sale
 
         # Returning the product units to its inventory
-        for sale_item in sale.saleitem_set.all():
-            sale_item.inventory.current_quantity += sale_item.quantity
-            sale_item.inventory.save()
-            sale_item.delete()
+        # for sale_item in sale.saleitem_set.all():
+        #     sale_item.inventory.current_quantity += sale_item.quantity
+        #     sale_item.inventory.save()
+        #     sale_item.delete()
 
-        return HttpResponseRedirect(reverse('sales:failure'))
+        messages.error(
+            self.request,
+            "Sorry, the payment process failed."
+        )
+
+        return self.return_response()
 
     def confirm_payment(self):
         confirmation = confirm_payment_request(self.object)
@@ -158,5 +191,4 @@ class PaymentConfirmationMixin(object):
         elif status == TpagaPayment.FAILED:
             return self.failure()
 
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
+        return self.return_response()

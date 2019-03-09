@@ -11,18 +11,9 @@ from .mixins import SaleProductMixin
 from .models import TpagaPayment
 
 
-def succes_view(request):
-    return render(request, 'sales/succes.html')
-
-
-def failure_view(request):
-    return render(request, 'sales/failure.html')
-
-
 class SaleProductFormView(SaleProductMixin, SaleMixin, FormView):
     form_class = SaleForm
-    success_url = '/sales/product'
-    template_name = 'sales/sale.html'
+    template_name = 'sales/sale_product.html'
 
     def form_valid(self, form):
 
@@ -36,11 +27,7 @@ class SaleProductFormView(SaleProductMixin, SaleMixin, FormView):
         return self.create_sale()
 
 
-class SaleDetailView(DetailView):
-    pass
-
-
-class TpagaPaymentConfirmation(PaymentConfirmationMixin, DetailView):
+class TpagaPaymentDetailView(PaymentConfirmationMixin, DetailView):
     model = TpagaPayment
     template_name = 'sales/tpaga_payment_details.html'
 
@@ -49,6 +36,10 @@ class TpagaPaymentConfirmation(PaymentConfirmationMixin, DetailView):
 
         return self.model.objects.get(sale__order=order)
 
+    def return_response(self):
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
 
@@ -56,5 +47,4 @@ class TpagaPaymentConfirmation(PaymentConfirmationMixin, DetailView):
             # Is necessary to confirm the payment
             return self.confirm_payment()
 
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
+        return self.return_response()

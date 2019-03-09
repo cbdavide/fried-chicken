@@ -39,7 +39,7 @@ def create_payment_request(sale, payment):
     )
 
     # purchase_details_url=reverse(
-    #     'sales:tpaga_confirmation',
+    #     'sales:tpaga_payment_details',
     #     args[str(sale.order)]
     # )
 
