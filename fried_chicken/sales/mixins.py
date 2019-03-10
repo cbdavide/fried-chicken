@@ -57,12 +57,22 @@ class CreditCardPaymentHandler(PaymentHandler):
 
 class TpagaPaymentHandler(PaymentHandler):
 
+    def _get_client_ip(self, request):
+
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
+
     def process_payment(self):
 
         payment = TpagaPayment(
             sale=self.sale,
-            user_ip_address=self.request.META['REMOTE_ADDR'],
-            expires_at=timezone.now() + timedelta(days=1)
+            user_ip_address=self._get_client_ip(self.request),
+            expires_at=timezone.now() + timedelta(days=3)
         )
 
         try:
