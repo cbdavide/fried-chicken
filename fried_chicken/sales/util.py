@@ -81,3 +81,20 @@ def confirm_delivery(payment):
         return response.json()
 
     raise Exception("Someting went wrong")
+
+
+def revert_payment(payment):
+
+    payload = dict(
+        payment_request_token=payment.tpaga_token
+    )
+
+    response = post_request(
+        f"{settings.PAYMENT_REQUEST_ENDPOINT}/refund",
+        payload
+    )
+
+    if response.status_code in [200, 409]:
+        return response.json()
+
+    raise Exception("Someting went wrong")
