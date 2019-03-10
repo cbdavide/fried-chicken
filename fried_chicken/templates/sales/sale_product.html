@@ -1,9 +1,28 @@
 {% extends "base.html" %}
 
 {% block main_content %}
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Comprar">
-    </form>
+    <div class="row">
+        <div class="col-12">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="col-6 col-12-mobilep">
+                    {{ form.product.errors }}
+                    {{ form.product.label_tag }}
+                    {{ form.product }}
+                </div>
+                <div class="col-6 col-12-mobilep">
+                    {{ form.quantity.errors }}
+                    {{ form.quantity.label_tag }}
+                    {{ form.quantity }}
+                </div>
+                <div class="col-12-mobilep">
+                    {{ form.payment_method.errors }}
+                    {{ form.payment_method.label_tag }}
+                    {{ form.payment_method }}
+                </div>
+                <input type="submit" value="Comprar">
+            </form>
+        </div>
+    </div>
 {% endblock %}

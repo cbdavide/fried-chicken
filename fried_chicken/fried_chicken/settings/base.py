@@ -135,6 +135,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, '..', 'static'),
+]
+
 TPAGA_API_BASE_URL = 'https://stag.wallet.tpaga.co/merchants/api/v1'
 PAYMENT_REQUEST_ENDPOINT = 'payment_requests'
 

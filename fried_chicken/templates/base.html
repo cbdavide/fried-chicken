@@ -1,24 +1,70 @@
-<!DOCTYPE html>
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title>{% block title %}Buy fried chicken{% endblock %}</title>
-    </head>
-    <body>
-        <header>
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
-                    {{ message }}
-                </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </header>
-        <section>
-            {% block main_content %}{% endblock %}
-        </section>
-    </body>
+{% load static %}
+
+<!DOCTYPE HTML>
+<!--
+	Alpha by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>{% block title %}Buy fried chicken{% endblock %}</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{% static "css/main.css" %}" />
+	</head>
+	<body class="landing is-preload">
+		<div id="page-wrapper">
+
+			<!-- Banner -->
+			<section id="banner">
+				<h2>Fried Chicken</h2>
+				<p>Buy the best fried chicken in the city.</p>
+			</section>
+
+			<!-- Main -->
+			<section id="main" class="container">
+				<section class="box special">
+					<div class="row">
+						<div class="col-12">
+							{% if messages %}
+							<ul class="messages">
+								{% for message in messages %}
+								<li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+									{{ message }}
+								</li>
+								{% endfor %}
+							</ul>
+							{% endif %}
+						</div>
+					</div>
+					<header class="major">
+						{% block main_content %}{% endblock %}
+					</header>
+				</section>
+			</section>
+			<!-- Footer -->
+			<footer id="footer">
+				<ul class="icons">
+					<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+					<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+					<li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+					<li><a href="#" class="icon fa-github"><span class="label">Github</span></a></li>
+					<li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
+					<li><a href="#" class="icon fa-google-plus"><span class="label">Google+</span></a></li>
+				</ul>
+				<ul class="copyright">
+					<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+				</ul>
+			</footer>
+		</div>
+
+		<!-- Scripts -->
+		<script src="{% static "js/jquery.min.js" %}"></script>
+		<script src="{% static "js/jquery.dropotron.min.js" %}"></script>
+		<script src="{% static "js/jquery.scrollex.min.js" %}"></script>
+		<script src="{% static "js/browser.min.js" %}"></script>
+		<script src="{% static "js/breakpoints.min.js" %}"></script>
+
+	</body>
 </html>
