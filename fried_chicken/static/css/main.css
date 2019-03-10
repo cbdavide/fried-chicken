@@ -3903,3 +3903,7 @@
 .messages .success {
 	background: #ddffdd;
 }
+
+.left-orientation {
+	text-align: left;
+}

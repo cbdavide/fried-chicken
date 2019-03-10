@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 
 {% block main_content %}
-    <h1>Hola Mundo!</h1>
+    <h2>Tpaga Payment Information</h2>
+    <p class="left-orientation">
+        <div class="left-orientation">
+            <strong>Order id: </strong> {{ object.sale.order }}
+        </div>
+        <div class="left-orientation">
+            <strong>Total: </strong> ${{ object.sale.total }}
+        </div>
+        <div class="left-orientation">
+            <strong>Payment status: </strong>{{ object.get_status_display }}
+        </div>
+    </p>
 {% endblock %}
