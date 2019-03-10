@@ -143,6 +143,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '..', 'static'),
 ]
 
+SERVER_URL = 'https://178.128.79.212.xip.io'
+
 TPAGA_API_BASE_URL = 'https://stag.wallet.tpaga.co/merchants/api/v1'
 PAYMENT_REQUEST_ENDPOINT = 'payment_requests'
 

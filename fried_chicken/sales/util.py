@@ -27,21 +27,23 @@ def get_request(api_endpoint, *args, **kwargs):
 
 def create_payment_request(sale, payment):
 
+    purchase_details_url = reverse(
+        'sales:tpaga_payment_details',
+        args=[str(sale.order)]
+    )
+
+    details_url = f"{settings.SERVER_URL}{purchase_details_url}"
+
     payload = dict(
         terminal_id=1,
         cost=sale.total,
         order_id=str(sale.order),
+        purchase_details_url=details_url,
         user_ip_address=payment.user_ip_address,
         expires_at=payment.expires_at.isoformat(),
-        purchase_details_url='https://google.com',
         idempotency_token=str(payment.idempotency_token),
         purchase_description="Payment of fried chicken.",
     )
-
-    # purchase_details_url=reverse(
-    #     'sales:tpaga_payment_details',
-    #     args[str(sale.order)]
-    # )
 
     response = post_request(
         f"{settings.PAYMENT_REQUEST_ENDPOINT}/create",
