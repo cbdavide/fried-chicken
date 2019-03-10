@@ -12,7 +12,12 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 import json
 
-with open("secrets.json", mode='r') as f:
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+SECRETS_FILE_PATH = os.path.join(BASE_DIR, 'secrets.json')
+
+with open(SECRETS_FILE_PATH, mode='r') as f:
     secrets = json.loads(f.read())
 
 
@@ -24,8 +29,6 @@ def get_secret(setting, secrets=secrets):
         error_msg = "Set the {} environment variable".format(setting)
         raise ImproperlyConfigured(error_msg)
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
