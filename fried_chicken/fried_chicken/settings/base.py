@@ -42,6 +42,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+STATIC_ROOT = "/home/django/"
 
 # Application definition
 
