@@ -22,8 +22,19 @@ docker-compose build
 **Run the migrations:**
 ```bash
 docker-compose run web ./manage.py migrate
+
 ```
 **Run the development server:**
 ```bash
 docker-compose up -d
 ```
+
+For development it is necessary to create a *secrets.json* file and save it int *fried_chicken/fried_chicken/secrets.json* with the following information:
+
+```json
+{
+    "TPAGA_USER": "tpaga_user",
+    "TPAGA_PASSWORD": "tpaga_password"
+}
+```
+
