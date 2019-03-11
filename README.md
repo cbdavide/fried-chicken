@@ -29,7 +29,7 @@ docker-compose run web ./manage.py migrate
 docker-compose up -d
 ```
 
-For development it is necessary to create a *secrets.json* file and save it int *fried_chicken/fried_chicken/secrets.json* with the following information:
+For development it is necessary to create a *secrets.json* file and save it in *fried_chicken/fried_chicken/secrets.json* with the following information:
 
 ```json
 {
