@@ -28,15 +28,14 @@ class TpagaPaymentAdmin(admin.ModelAdmin):
         if "refund" in request.POST:
 
             response = revert_payment(obj)
-            print(response)
 
             error = response.get('error_code', None)
             if error:
                 messages.error(request, response['error_message'])
             else:
-                object.status = REVERSE_TPAGA_STATUS[response['status']]
-                objects.save()
+                obj.status = REVERSE_TPAGA_STATUS[response['status']]
+                obj.save()
 
-                messages.success('The payment status changed.')
+                messages.success(request, 'The payment status changed.')
 
         return super().response_change(request, obj)
